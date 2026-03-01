@@ -10,14 +10,15 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    openapi_url="/openapi.json"
+    openapi_url="/files/openapi.json",
+    docs_url="/files/docs",
+    redoc_url="/files/redoc"
 )
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
+        "https://d1vyb8a355t0zz.cloudfront.net",
         "http://localhost:8080",
     ],
     allow_credentials=True,
@@ -25,8 +26,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(api_router, prefix="/api/v1")
+app.include_router(api_router, prefix="/files/api/v1")
 
-@app.get("/")
+@app.get("/files/")
 def root():
     return {"message": f"Welcome to the {settings.PROJECT_NAME} API"}
+
+@app.get("/files/health")
+def health_check():
+    return {"status": "healthy", "service": settings.PROJECT_NAME}
