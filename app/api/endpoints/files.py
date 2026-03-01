@@ -13,12 +13,18 @@ from app.core.config import settings
 
 router = APIRouter()
 
-s3_client = boto3.client(
-    "s3",
-    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-    region_name=settings.AWS_REGION_NAME
-)
+if settings.AWS_ACCESS_KEY_ID and settings.AWS_SECRET_ACCESS_KEY:
+    s3_client = boto3.client(
+        "s3",
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        region_name=settings.AWS_REGION_NAME
+    )
+else:
+    s3_client = boto3.client(
+        "s3",
+        region_name=settings.AWS_REGION_NAME
+    )
 
 @router.post("/upload", response_model=file_schema.FileResponse, status_code=status.HTTP_201_CREATED)
 def upload_file(
